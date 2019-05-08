@@ -5,12 +5,14 @@ This demonstrates the use of CanvasSaveButton.
 ```jsx
 import React from 'react';
 import OLMap from 'ol/Map';
+import CanvasSaveButton from 'react-spatial/components/CanvasSaveButton';
 import BasicMap from 'react-spatial/components/BasicMap';
 import ConfigReader from 'react-spatial/ConfigReader';
-import ShareMenu from 'react-spatial/components/ShareMenu';
 import LayerService from 'react-spatial/LayerService';
+import Copyright from '../Copyright/Copyright';
+import NorthArrow from '../NorthArrow/NorthArrow';
 
-class ShareMenuExample extends React.Component {
+class CanvasSaveButtonExample extends React.Component {
   constructor(props) {
     super(props);
     this.map = new OLMap({ controls: [] });
@@ -34,26 +36,31 @@ class ShareMenuExample extends React.Component {
           center={this.center}
           zoom={3}
         />
-        <ShareMenu url={window.location.href}>
+        <div className="tm-canvas-save-button-menu">
           <CanvasSaveButton
             title="Karte als Bild speichern."
-            className='tm-canvas-save-button tm-share-menu-icon'
+            className="tm-canvas-save-button"
             map={this.map}
             extent={extent}
             extraData={{
-              copyright: '© Example copyright',
+              copyright: {
+                text: () => {
+                  return this.layerService.getCopyrights();
+                },
+              },
               northArrow: {
-                rotation: 25,
+                rotation: () => {
+                  return NorthArrow.radToDeg(this.map.getView().getRotation());
+                },
                 circled: true,
               },
             }}
           />
-        </ShareMenu>
-
+        </div>
       </div>
     );
   }
 }
 
-<ShareMenuExample />;
+<CanvasSaveButtonExample />;
 ```
