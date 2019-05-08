@@ -4,9 +4,11 @@ import PropTypes from 'prop-types';
 import OLMap from 'ol/Map';
 import { getTopLeft, getBottomRight } from 'ol/extent';
 import { TiImage } from 'react-icons/ti';
-import NorthArrowInline from '!svg-inline-loader!../../images/northArrow.svg';
-import NorthArrowBase64 from '!url-loader!../../images/northArrow.svg';
 import Button from '../Button';
+// eslint-disable-next-line import/no-unresolved
+import NorthArrowSimple from '!url-loader!../../images/northArrow.svg';
+// eslint-disable-next-line import/no-unresolved
+import NorthArrowCircle from '!url-loader!../../images/northArrowCircle.svg';
 
 const propTypes = {
   /**
@@ -161,10 +163,9 @@ class CanvasSaveButton extends PureComponent {
         // North arrow
         if (extraData && extraData.northArrow) {
           const img = new Image();
-          img.src = NorthArrowBase64;
-          /* `data:image/svg+xml;utf8,${encodeURIComponent(
-            NorthArrowInline,
-          )}`; */
+          img.src = extraData.northArrow.circled
+            ? NorthArrowCircle
+            : NorthArrowSimple;
 
           img.onload = () => {
             destContext.save();
