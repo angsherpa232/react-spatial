@@ -19,6 +19,7 @@ import OSM from 'ol/source/OSM';
 import FeatureStyler from 'react-spatial/components/FeatureStyler';
 import Button from 'react-spatial/components/Button';
 import AddTextIcon from 'react-spatial/images/text.png';
+import styles from 'react-spatial/utils/Styles';
 
 class FeatureStylerExample extends React.Component {
   constructor(props) {
@@ -100,6 +101,84 @@ class FeatureStylerExample extends React.Component {
     ]));
     line.setStyle(this.defaultLineStyle.clone());
 
+    const createStyle = (src, img) => {
+    return new Style({
+      image: new Icon({
+        src,
+        img,
+        imgSize: img ? [img.width, img.height] : undefined,
+      }),
+    });
+  };
+
+  // creates highlighted feature icon.
+  const createIcon = (image, iconScale) => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+
+    const activeColor = 'white';
+    const dArr = [-1, -1, 0, -1, 1, -1, -1, 0, 1, 0, -1, 1, 0, 1, 1, 1];
+    // Thickness scale
+    const scale = 2;
+    // Final x position
+    const x = 2;
+    // Final y position
+    const y = 2;
+
+    // Set new canvas dimentions adjusted for border
+    canvas.width = iconScale * image.width + 2 * scale;
+    canvas.height = iconScale * image.height + 2 * scale;
+
+    // Draw images at offsets from the array scaled
+    for (let i = 0; i < dArr.length; i += 2)
+      ctx.drawImage(image, x + dArr[i] * scale, y + dArr[i + 1] * scale);
+
+    // Fill with color
+    ctx.globalCompositeOperation = 'source-in';
+    ctx.fillStyle = activeColor;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Draw original image in normal mode
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.drawImage(
+      image,
+      x,
+      y,
+      iconScale * image.width,
+      iconScale * image.height,
+    );
+    return canvas;
+  };
+  const dfltSelectStyle = styles.default;
+    this.selectStyleFc = (feat) => {
+      const featStyle = feat.getStyleFunction();
+
+      if (!featStyle) {
+        return [dfltSelectStyle];
+      }
+
+      const oldStyle =
+        featStyle() instanceof Array
+          ? featStyle()[0].clone()
+          : featStyle().clone();
+      const style = oldStyle.clone();
+
+      if (style.getStroke() instanceof Icon) {
+        return [dfltSelectStyle];
+      }
+
+      if (style.getImage() instanceof Icon) {
+        const iconScale = oldStyle.getImage().getScale();
+        const image = oldStyle.getImage().getImage();
+        const canvas = createIcon(image, iconScale);
+
+
+        return [createStyle(undefined, canvas)];
+      }
+
+      return [dfltSelectStyle];
+    };
+
     this.layers = [
       new Layer({
         olLayer: new TileLayer({
@@ -154,6 +233,7 @@ class FeatureStylerExample extends React.Component {
           layer={this.layers[1]}
           onSelect={this.select}
           onDeselect={this.deselect}
+          selectStyle={this.selectStyleFc}
         />
         {this.renderFeatureStyler()}
       </div>

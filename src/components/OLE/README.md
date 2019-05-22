@@ -13,6 +13,7 @@ import TileLayer from 'ol/layer/Tile';
 import { Icon, Style, Fill, Circle, Stroke } from 'ol/style';
 import OLE from 'react-spatial/components/OLE';
 import OSM, {ATTRIBUTION} from 'ol/source/OSM.js';
+import styles from 'react-spatial/utils/Styles';
 
 class OLEExample extends React.Component {
   constructor(props) {
@@ -95,8 +96,14 @@ class OLEExample extends React.Component {
     return canvas;
   };
 
+  const dfltSelectStyle = styles.default;
   this.selectStyleFc = (feat) => {
       const featStyle = feat.getStyleFunction();
+
+      if (!featStyle) {
+        return [dfltSelectStyle];
+      }
+
 
       const oldStyle =
         featStyle() instanceof Array

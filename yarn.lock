@@ -6736,10 +6736,8 @@ ol@^5.3.0:
     pixelworks "1.1.0"
     rbush "2.0.2"
 
-ole@^0.0.4-beta.2:
-  version "0.0.4-beta.2"
-  resolved "https://registry.yarnpkg.com/ole/-/ole-0.0.4-beta.2.tgz#1f7e2d7ef33f3ab195047e4d50bb132970c8600a"
-  integrity sha512-k9ue7KbUfnY7piICiPt2gYgWPlRNiaJvyeWvqOLbOQUMLxdlmXe3WoSe3QvUkNxB9GexACyWB7WuIkyMXwDS6g==
+ole@../oterral-ole2:
+  version "0.0.4"
 
 on-finished@~2.3.0:
   version "2.3.0"
