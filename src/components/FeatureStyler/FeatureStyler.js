@@ -122,6 +122,11 @@ const propTypes = {
     modifyIcon: PropTypes.string,
     modifyIconSize: PropTypes.string,
   }),
+
+  /**
+   * Boolean value to trigger popup re-render.
+   */
+  updateContent: PropTypes.bool,
 };
 
 const defaultProps = {
@@ -198,7 +203,10 @@ const defaultProps = {
     modifyIcon: 'Modify icon',
     modifyIconSize: 'Modify icon size',
   },
+  updateContent: false,
 };
+
+const REGEX_BOLD = /bold /i;
 
 /**
  * This component allows to modify an ol.style.Style of a ol.Feature.
@@ -211,9 +219,13 @@ class FeatureStyler extends PureComponent {
     return Array.isArray(styles) ? styles : [styles];
   }
 
+  static isFontBold(font) {
+    return REGEX_BOLD.test(font);
+  }
+
   static toggleFontBold(font) {
-    return font.indexOf('bold') > -1
-      ? font.replace('bold ', '')
+    return FeatureStyler.isFontBold(font)
+      ? font.replace(REGEX_BOLD, '')
       : `bold ${font}`;
   }
 
@@ -284,7 +296,7 @@ class FeatureStyler extends PureComponent {
     }
 
     // Update Text style if it existed;
-    const textStyle = oldStyle.getText();
+    const textStyle = oldStyle.getText() ? oldStyle.getText().clone() : null;
     if (textStyle) {
       textStyle.setText(text);
 
@@ -353,7 +365,7 @@ class FeatureStyler extends PureComponent {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { feature } = this.props;
+    const { feature, updateContent } = this.props;
     const {
       font,
       name,
@@ -372,6 +384,11 @@ class FeatureStyler extends PureComponent {
       feature.getStyleFunction() &&
       feature !== prevProps.feature
     ) {
+      this.updateContent();
+    }
+
+    if (updateContent !== prevProps.updateContent) {
+      // Force to re-render the popup state, if style change.
       this.updateContent();
     }
 
@@ -591,6 +608,8 @@ class FeatureStyler extends PureComponent {
       return null;
     }
 
+    const isBold = FeatureStyler.isFontBold(font);
+
     return (
       <>
         <div>
@@ -606,6 +625,7 @@ class FeatureStyler extends PureComponent {
 
         <div className={classNameTextFont}>
           <Button
+            className={`tm-button${isBold ? ' tm-button-text-bold' : ''}`}
             onClick={() => {
               this.setState({ font: FeatureStyler.toggleFontBold(font) });
             }}
