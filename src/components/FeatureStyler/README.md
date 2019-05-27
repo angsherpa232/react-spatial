@@ -131,7 +131,12 @@ class FeatureStylerExample extends React.Component {
 
     // Draw images at offsets from the array scaled
     for (let i = 0; i < dArr.length; i += 2)
-      ctx.drawImage(image, x + dArr[i] * scale, y + dArr[i + 1] * scale);
+      ctx.drawImage(
+        image, x + dArr[i] * scale,
+        y + dArr[i + 1] * scale,
+        iconScale * image.width,
+        iconScale * image.height
+      );
 
     // Fill with color
     ctx.globalCompositeOperation = 'source-in';
