@@ -13,12 +13,6 @@ const propTypes = {
   feature: PropTypes.instanceOf(Feature),
 
   /**
-   * Index of the style to modify.
-   * Only necessary feature.getStyleFunction() returns an array of styles.
-   */
-  styleIdx: PropTypes.number,
-
-  /**
    * List of colors available for modifcation.
    */
   colors: PropTypes.arrayOf(
@@ -132,7 +126,6 @@ const propTypes = {
 const defaultProps = {
   t: l => l,
   feature: undefined,
-  styleIdx: 0,
   className: 'tm-feature-styler',
   classNameIcons: 'tm-modify-icons',
   classNameIconSize: 'tm-modify-icon-size',
@@ -416,7 +409,6 @@ class FeatureStyler extends PureComponent {
       colors,
       textSizes,
       iconSizes,
-      styleIdx,
     } = this.props;
     let name;
     let iconCategory;
@@ -430,7 +422,7 @@ class FeatureStyler extends PureComponent {
     let useIconStyle = false;
     let useColorStyle = false;
     let color;
-    const featStyle = FeatureStyler.getStyleAsArray(feature)[styleIdx];
+    const featStyle = FeatureStyler.getStyleAsArray(feature)[0];
 
     if (!featStyle) {
       return;
@@ -488,7 +480,7 @@ class FeatureStyler extends PureComponent {
   }
 
   applyStyle() {
-    const { feature, styleIdx } = this.props;
+    const { feature } = this.props;
     const {
       useTextStyle,
       font,
@@ -507,7 +499,7 @@ class FeatureStyler extends PureComponent {
 
     // Update the style of the feature with the current style
     const oldStyles = FeatureStyler.getStyleAsArray(feature);
-    const style = FeatureStyler.updateStyleFromProperties(oldStyles[styleIdx], {
+    const style = FeatureStyler.updateStyleFromProperties(oldStyles[0], {
       font,
       description,
       color,
@@ -525,11 +517,7 @@ class FeatureStyler extends PureComponent {
     feature.set('description', description);
 
     // Reconstruct the initial styles array.
-    feature.setStyle([
-      ...oldStyles.splice(0, styleIdx),
-      style,
-      ...oldStyles.splice(styleIdx + 1),
-    ]);
+    feature.setStyle([style]);
   }
 
   renderColors(color, classNameColors, classNameSelected, onClick) {
