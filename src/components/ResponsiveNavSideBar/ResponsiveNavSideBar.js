@@ -124,7 +124,7 @@ class ResponsiveNavSideBar extends React.Component {
               </ul>
             </div>
           </div>
-          </Header>
+        </Header>
         <nav className={classes}>
           <ul className={classNameUl}>{children}</ul>
         </nav>
